@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Weather App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to right, #00c6ff, #0072ff);
+      color: #fff;
+      display: flex;
+    justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      text-align: center;
+      background-color: rgba(0, 0, 0, 0.4);
+      padding: 30px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 400px;
+    }
+
+    input[type="text"] {
+      padding: 10px;
+      width: 80%;
+      margin-bottom: 15px;
+      border: none;
+      border-radius: 5px;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #ffcc00;
+      border: none;
+      border-radius: 5px;
+      color: #000;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background-color: #ff9900;
+    }
+
+    .result {
+      margin-top: 20px;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Weather App</h1>
+    <input type="text" id="locationInput" placeholder="Enter location (e.g. Texas)" />
+    <button onclick="getWeather()">Get Weather</button>
+    <div class="result" id="result"></div>
+  </div>
+
+  <script>
+    const API_KEY = "037b489d9b414ee5993195143251605";
+
+    function getWeather() {
+      const location = document.getElementById("locationInput").value;
+      const resultDiv = document.getElementById("result");
+
+      if (!location) {
+        resultDiv.innerHTML = "Please enter a location.";
+        return;
+      }
+
+      fetch(`http://api.weatherapi.com/v1/current.json?key=${API_KEY}&q=${location}&aqi=yes`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.error) {
+            resultDiv.innerHTML = `Error: ${data.error.message}`;
+          } else {
+            const temp = data.current.temp_c;
+            const condition = data.current.condition.text;
+            const wind = data.current.wind_kph;
+            const humidity = data.current.humidity;
+
+            resultDiv.innerHTML = `
+              <p><strong>Location:</strong> ${data.location.name}, ${data.location.region}</p>
+              <p><strong>Temperature:</strong> ${temp}°C</p>
+              <p><strong>Condition:</strong> ${condition}</p>
+              <p><strong>Wind:</strong> ${wind} kph</p>
+              <p><strong>Humidity:</strong> ${humidity}%</p>
+            `;
+          }
+        })
+        .catch(error => {
+          resultDiv.innerHTML = "Failed to fetch weather data.";
+          console.error("Error fetching weather data:", error);
+        });
+    }
+  </script>
+</body>
+</html>
